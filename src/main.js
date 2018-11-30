@@ -3,7 +3,12 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import Vuetify from './vuetify'
+import config from './config'
+import axios from 'axios'
 
+Vue.use(Vuetify, { theme: config.theme})
+Vue.prototype.$ajax = axios
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
@@ -13,3 +18,4 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
+
