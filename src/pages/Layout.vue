@@ -1,8 +1,7 @@
 <!--页面布局-->
 <template>
-  <!--theme-->
-  <v-app dark>
-    <!--左侧导航-->
+  <v-app :dark="dark">
+    <!-- 左侧导航条 -->
     <v-navigation-drawer
       :dark="dark"
       persistent
@@ -25,6 +24,7 @@
         </v-list>
       </v-toolbar>
 
+      <!-- 左侧菜单 -->
       <v-list class="pt-0" dense>
         <v-list-group
           v-model="item.active"
@@ -40,7 +40,7 @@
             </v-list-tile-content>
           </v-list-tile>
           <!-- 二级菜单 -->
-          <v-list-tile v-for="subItem in item.items" :key="subItem.title" :to="item.path + subItem.path">
+          <v-list-tile v-for="subItem in item.childrens" :key="subItem.title" :to="item.path+subItem.path"  @click="chageName(subItem,item)">
             <v-list-tile-content>
               <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
             </v-list-tile-content>
@@ -50,13 +50,12 @@
           </v-list-tile>
         </v-list-group>
       </v-list>
-
     </v-navigation-drawer>
-    <!--顶部工具栏-->
+    <!-- 顶部工具条 -->
+
     <v-toolbar
       app
-      dark
-      :color="dark ? 'secondary' : 'primary'"
+      color="light-blue accent-3"
     >
       <!-- 隐藏左侧菜单的按钮-->
       <v-toolbar-side-icon @click.stop="drawer = !drawer"/>
@@ -65,57 +64,80 @@
         <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'"/>
       </v-btn>
       <!-- 切换黑暗主题 -->
-      <v-flex xs1>
-        <v-switch
-          :label="dark ? '暗黑' : '明亮'"
-          v-model="dark"
-          color="dark"
-          hide-details
-        />
-      </v-flex>
+      <!--<v-flex xs1>-->
+        <!--<v-switch-->
+          <!--:label="dark ? '暗黑' : '明亮'"-->
+          <!--v-model="dark"-->
+          <!--color="dark"-->
+          <!--hide-details-->
+        <!--/>-->
+      <!--</v-flex>-->
       <!-- 顶部导航标题 -->
-      <v-flex xs3></v-flex>
+      <v-flex xs4></v-flex>
       <v-toolbar-title v-text="title"/>
       <v-spacer/>
 
-      <!-- 调色板 -->
-      <v-btn icon @click.stop="dark = !dark">
-        <v-icon>invert_colors</v-icon>
+      <v-btn icon @click="logout">
+        <v-icon>logout</v-icon>
       </v-btn>
+
       <!-- 顶部导航用户菜单 -->
-      <v-btn icon @click.stop="dark = !dark">
-        <v-icon>account_box</v-icon>
-      </v-btn>
 
     </v-toolbar>
-    <!--中间内容-->
-    <!--v-content 并不是组件，是标记页面布局的元素-->
+    <!--中间内容主体-->
     <v-content>
-
+      <v-breadcrumbs>
+        <v-icon slot="divider">chevron_right</v-icon>
+        <v-breadcrumbs-item>{{item1}}</v-breadcrumbs-item>
+        <v-breadcrumbs-item>{{item2}}</v-breadcrumbs-item>
+      </v-breadcrumbs>
+      <div>
+        <!--定义一个路由锚点，Layout的子组件内容将在这里展示-->
+        <router-view/>
+      </div>
     </v-content>
-    <div>
-      <router-view/>
-    </div>
   </v-app>
 </template>
 
 <script>
-
     export default {
       name: "App",
-      data: ()=>{
-        items: []
+      data()  {
+        return  {
+          dark: false,// 是否暗黑主题
+          drawer: true,// 左侧导航是否隐藏
+          miniVariant: false,// 左侧导航是否收起
+          title: 'financial后台管理',// 顶部导航条名称,
+          item1: '',
+          item2: '',
+          items:  []
+        }
       },
-      mounted: ()=>{
+      mounted: function () {
         this.$nextTick(function () {
           this.loadItems()
         })
       },
+      computed: {
+
+      },
       methods: {
         loadItems() {
-          this.$ajax.get('/api/menus/menu/list').then(res=>{
-            console.log(res)
-          })
+          this.$ajax.get('/menus/menu/list').then(res=>{
+            this.items = res.data;
+
+          });
+        },
+        //退出登录
+        logout(){
+          this.$ajax.post('/menus/user/logout').then(res=>{
+
+          });
+        },
+        chageName(subItem,item){
+          this.item1 = item.title
+          this.item2 = subItem.title
+
         }
       }
     }
