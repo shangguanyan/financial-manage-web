@@ -15,6 +15,31 @@ const config = {
     warning: "#FFC107",
     info: "#64B5F6",
     success: "#4caf50"
+  },
+  icons:{
+    'complete': '',
+    'cancel': '',
+    'close': '',
+    'delete': '', // delete (e.g. v-chip close)
+    'clear': '',
+    'success': '',
+    'info': '',
+    'warning': '',
+    'error': '',
+    'prev': '',
+    'next': '',
+    'checkboxOn': '',
+    'checkboxOff': '',
+    'checkboxIndeterminate': '',
+    'delimiter': '', // for carousel
+    'sort': '',
+    'expand': '',
+    'menu': '',
+    'subgroup': '',
+    'dropdown': '',
+    'radioOn': '',
+    'radioOff': '',
+    'edit': ''
   }
 }
 export default config

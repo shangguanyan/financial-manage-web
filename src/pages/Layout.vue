@@ -79,6 +79,7 @@
 
       <v-btn icon @click="logout">
         <v-icon>logout</v-icon>
+
       </v-btn>
 
       <!-- 顶部导航用户菜单 -->
@@ -86,7 +87,7 @@
     </v-toolbar>
     <!--中间内容主体-->
     <v-content>
-      <v-breadcrumbs>
+      <v-breadcrumbs v-if="hascontent">
         <v-icon slot="divider">chevron_right</v-icon>
         <v-breadcrumbs-item>{{item1}}</v-breadcrumbs-item>
         <v-breadcrumbs-item>{{item2}}</v-breadcrumbs-item>
@@ -110,7 +111,8 @@
           title: 'financial后台管理',// 顶部导航条名称,
           item1: '',
           item2: '',
-          items:  []
+          items:  [],
+          hascontent: false
         }
       },
       mounted: function () {
@@ -135,6 +137,7 @@
           });
         },
         chageName(subItem,item){
+          this.hascontent = true,
           this.item1 = item.title
           this.item2 = subItem.title
 

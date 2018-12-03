@@ -20,7 +20,8 @@ export default new Router({
       path: '/',
       component: () => import('../pages/Layout'),
       children: [
-        route("/goods/category","/goods/Category","Category")
+        route("/goods/category","/goods/Category","Category"),
+        route("/goods/brand","/goods/Brand","Brand")
       ]
     }
   ]
