@@ -8,12 +8,14 @@ import config from './config'
 import axios from 'axios'
 import 'vuetify/dist/vuetify.min.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
-import 'element-ui/lib/theme-chalk/index.css';
+import 'element-ui/lib/theme-chalk/index.css'
 import m from './components/message/myMessage'
+import qs from 'qs'
 
 axios.defaults.baseURL = config.api;
 Vue.prototype.$ajax = axios
 Vue.prototype.$message = m;
+Vue.prototype.$qs = qs;
 
 Vue.use(Vuetify,{icons:config.icons}, { theme: config.theme})
 
