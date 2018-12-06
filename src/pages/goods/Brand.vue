@@ -91,16 +91,17 @@
           console.log(brand)
         },
         deleteBrand(brand){
+          let data= {
+            "id": brand.id
+          }
           this.$message.confirm("确定要删除"+brand.name+"这个品牌吗").then(_=>{
             this.$ajax({
               url:  "goods/brand/delete",
-              data: {
-                "id": brand.id
-              },
-              contentType: 'application/text',
+              data: this.$qs.stringify(data),
+              contentType: 'application/x-www-form-urlencoded',
               method: 'post'
             }).then(res=>{
-              debugger
+              this.$message.info("删除"+brand.name+"品牌成功")
               this.loadBrands()
             })
           }).catch(_=>{
