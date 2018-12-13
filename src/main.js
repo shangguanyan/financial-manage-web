@@ -17,11 +17,13 @@ Vue.prototype.$ajax = axios
 Vue.prototype.$message = m;
 Vue.prototype.$qs = qs;
 
-Vue.use(Vuetify,{icons:config.icons}, { theme: config.theme})
+Vue.use(Vuetify,{icons:config.icons}, { theme: config.theme});
 
-Vue.component("vTree",()=>import('./components/tree/Tree'))
+Vue.component("vTree",()=>import('./components/tree/Tree'));
+Vue.component("vCascader", () => import('./components/Cascader'));
+Vue.component("vUpload", () => import('./components/Upload'));
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
 new Vue({

@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-        <v-btn color="primary" fab small dark> <v-icon>add</v-icon></v-btn>
+        <v-btn color="primary" @click="addBrand" fab small dark> <v-icon>add</v-icon></v-btn>
       <v-spacer></v-spacer>
       <v-form>
         <v-text-field
@@ -36,6 +36,48 @@
         </td>
       </template>
     </v-data-table>
+
+
+    <v-dialog v-model="dialog"  color="primary" max-width="500px">
+      <v-card>
+        <v-toolbar dense dark color="primary">
+          <v-toolbar-title>新增品牌</v-toolbar-title>
+          <v-spacer/>
+          <!--关闭窗口的按钮-->
+          <v-btn icon @click="dialog=false"><v-icon>close</v-icon></v-btn>
+        </v-toolbar>
+        <v-form v-model="valid" ref="addBrandForm">
+          <v-text-field v-model="brand.name"  label="请输入品牌名称" required />
+          <v-text-field v-model="brand.letter" label="请输入品牌首字母" required />
+          <v-cascader
+            url="/goods/category/list"
+            multiple
+            required
+            v-model="brand.categories"
+            label="请选择商品分类"/>
+          <v-layout row>
+            <v-flex xs3>
+              <span style="font-size: 16px; color: #444">品牌LOGO：</span>
+            </v-flex>
+            <v-flex>
+              <v-upload
+                v-model="brand.image"
+                url="/upload"
+                :multiple="false"
+                :pic-width="250"
+                :pic-height="90"
+              />
+            </v-flex>
+          </v-layout>
+        </v-form>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" flat @click="reset">reset</v-btn>
+          <v-btn color="blue darken-1" flat @click="saveBrand">Save</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </v-card>
 </template>
 
@@ -58,7 +100,15 @@
             {text: '操作', align: 'center', value: 'id', sortable: false}
           ],
           brands: [
-          ]
+          ],
+          dialog: false,
+          valid:false, // 表单校验结果标记
+          brand:{
+            name:'', // 品牌名称
+            letter:'', // 品牌首字母
+            image:'',// 品牌logo
+            categories:[], // 品牌所属的商品分类数组
+          }
         }
       },
       mounted: function () {
@@ -84,11 +134,36 @@
               this.totalNum = pageResult.totalNum;
             })
         },
+        reset() {
+          this.$refs.addBrandForm.reset();
+        },
         getSearch(){
           this.loadBrands()
         },
         editBrand(brand){
           console.log(brand)
+        },
+        addBrand() {
+          this.dialog = true;
+        },
+        saveBrand(){
+          // let addBrandForm = this.$refs.addBrandForm;
+          // console.log(addBrandForm)
+          // console.log(this.brand)
+          this.$ajax({
+            url:"/goods/brand/add",
+            method:"post",
+            data:this.brand
+          }).then(res=>{
+            let response = res;
+            if(response.status === 200){
+              this.dialog = false;
+              this.loadBrands();
+            }
+          }).catch(_=>{
+            this.$message.error("网络异常")
+          })
+
         },
         deleteBrand(brand){
           let data= {
