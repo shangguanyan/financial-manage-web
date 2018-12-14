@@ -31,7 +31,7 @@
 
 <script>
   import {Upload} from 'element-ui';
-  import config from '../../config'
+  import config from '../config'
 
   export default {
     name: "vUpload",
@@ -109,7 +109,7 @@
       value:{
         deep:true,
         handler(val,oldVal){
-    
+
           if (this.multiple) {
             this.fileList = val.map(f => {
               return {response: f,url:f}

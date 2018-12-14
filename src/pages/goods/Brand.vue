@@ -62,7 +62,7 @@
             <v-flex>
               <v-upload
                 v-model="brand.image"
-                url="/upload"
+                url="/upload/image"
                 :multiple="false"
                 :pic-width="250"
                 :pic-height="90"
@@ -108,7 +108,9 @@
             letter:'', // 品牌首字母
             image:'',// 品牌logo
             categories:[], // 品牌所属的商品分类数组
-          }
+            isEdit:false
+          },
+          isEdit:false//通过点击按钮判断是添加还是修改
         }
       },
       mounted: function () {
@@ -141,15 +143,24 @@
           this.loadBrands()
         },
         editBrand(brand){
-          console.log(brand)
+          this.$ajax.get('/goods/brand/getByBid?bid='+brand.id).then(res=>{
+            this.dialog = true;
+            this.brand = brand;
+            this.brand.categories = res.data;
+          });
+          this.isEdit = true;
+
         },
         addBrand() {
           this.dialog = true;
+          this.brand = null;
+          this.isEdit = false
         },
         saveBrand(){
           // let addBrandForm = this.$refs.addBrandForm;
           // console.log(addBrandForm)
           // console.log(this.brand)
+          this.brand.isEdit = this.isEdit;
           this.$ajax({
             url:"/goods/brand/add",
             method:"post",
