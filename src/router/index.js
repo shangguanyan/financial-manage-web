@@ -21,7 +21,8 @@ export default new Router({
       component: () => import('../pages/Layout'),
       children: [
         route("/goods/category","/goods/Category","Category"),
-        route("/goods/brand","/goods/Brand","Brand")
+        route("/goods/brand","/goods/Brand","Brand"),
+        route("/goods/param","/goods/Param","Param"),
       ]
     }
   ]
