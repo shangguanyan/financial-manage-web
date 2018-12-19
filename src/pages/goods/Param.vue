@@ -37,9 +37,9 @@
           :total-items="totalNum"
           class="elevation-1"
         >
-          <template :items="items" slot-scope="props">
+          <template slot="items" slot-scope="props">
             <td class="text-xs-center">{{ props.item.id }}</td>
-            <td class="text-xs-center">{{ props.item.name }}</td>
+            <td class="text-xs-center">{{ props.item.paramName }}</td>
             <td class="text-xs-center">
               <span >{{props.item.search | searchShow}}</span>
             </td>
@@ -52,20 +52,41 @@
 
         <v-dialog v-model="dialog"  color="primary" max-width="500px">
           <v-card>
-            <v-toolbar dense dark color="primary">
-              <v-toolbar-title>新增品牌</v-toolbar-title>
+            <v-toolbar dense dark color="#b3d4fc">
+              <v-toolbar-title>
+                <v-breadcrumbs>
+                  <v-icon slot="divider">chevron_right</v-icon>
+                  <v-breadcrumbs-item v-for="(item,index) in itemName" :key="index">{{item}}</v-breadcrumbs-item>
+                </v-breadcrumbs>
+              </v-toolbar-title>
               <v-spacer/>
               <!--关闭窗口的按钮-->
-              <v-btn icon @click="dialog=false"><v-icon>close</v-icon></v-btn>
+              <v-btn icon @click="closeClick"><v-icon>close</v-icon></v-btn>
             </v-toolbar>
             <v-form v-model="valid" ref="addCategoryParamForm">
-              <v-text-field v-model="categoryParam.paramName"  label="属性名称" required />
+              <v-flex xs9 >
+                <v-text-field v-model="addCategoryParamForm.paramName" middle  label="属性名称" padding-left="20px" required />
+              </v-flex>
+
+              <v-flex xs6 display="inline">
+                <v-subheader>是否可搜索</v-subheader>
+                <v-select
+                  :items="selectitems"
+                  v-model="searched"
+                  item-text="state"
+                  item-value="abbr"
+                  label=""
+                  solo
+                ></v-select>
+              </v-flex>
+
+
 
             </v-form>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" flat @click="reset">reset</v-btn>
-              <v-btn color="blue darken-1" flat @click="saveBrand">Save</v-btn>
+              <v-btn color="blue darken-1" flat @click="save">Save</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -77,12 +98,17 @@
 
 <script>
     export default {
-      name: "Param",
+      name: "cateporyparam",
       data()  {
         return {
           showCategoryParam: false,
-          clickNodeId: '',
+          clickNode:  {},
           search: '',
+          searched:null,
+          selectitems: [
+            {state:'是',abbr:1},
+            {state:'否',abbr:0},
+          ],
           pagination: {
             page: 1,
             rowsPerPage: 5
@@ -95,39 +121,44 @@
             {text: '操作', align: 'center', value: 'id', sortable: false}
           ],
           categoryParams: [],
+          valid:  false,
           dialog: false,
-          categoryParam: {
+          isEdit:false,
+          addCategoryParamForm: {
             paramName: '',
-            search:0
-          }
+            search:null,
+            isEdit:false,
+            categoryId:''
+          },
+          itemName: []
 
         };
       },
       methods:  {
         queryCategoryParam(){
           this.$ajax({
-            url:  "/goods/categoryParam/getByCid",
+            url: "/goods/categoryParam/getByCid",
             method: 'post',
             data: {
               currentPage: this.pagination.page,
               pageRows: this.pagination.rowsPerPage,
               searchKeys: {
                 name: this.search,
-                category_id:  this.clickNodeId
+                category_id: this.clickNode.id
               }
             }
-          }).then(res=>{
+          }).then(res => {
             let pageResult = res.data;
-            this.brands = pageResult.results;
+            this.categoryParams = pageResult.results;
             this.totalNum = pageResult.totalNum;
-          })
+          });
         },
 
         handleClick(node) {
           if (!node.isParent) {
             // 显示规格组
             this.showCategoryParam = true;
-            this.clickNodeId = node.id;
+            this.clickNode = node;
             this.queryCategoryParam();
           }else {
             this.showCategoryParam = false;
@@ -135,7 +166,31 @@
         },
         addCategoryParam(){
           this.dialog = true;
-          this.categoryParam = null;
+          this.itemName = this.clickNode.path;
+          this.isEdit = false;
+        },
+        reset(){
+          this.$refs.addCategoryParam.reset();
+        },
+        save(){
+          this.addCategoryParamForm.isEdit = this.isEdit;
+          this.addCategoryParamForm.categoryId = this.clickNode.id;
+          this.addCategoryParamForm.search = this.searched;
+          this.$ajax({
+            url:'/goods/categoryParam/add',
+            method:'post',
+            data:this.addCategoryParamForm
+          }).then(res=>{
+            if(res.status === 200){
+              this.dialog = false;
+              this.$refs.addCategoryParamForm.reset();
+              this.queryCategoryParam();
+            }
+          })
+        },
+        closeClick(){
+          this.dialog = false;
+          this.queryCategoryParam();
         },
         getSearch(){
           this.queryCategoryParam();
@@ -144,6 +199,14 @@
       filters:{
         searchShow(value){
           return value === 1?'是':'否';
+        }
+      },
+      watch:  {
+        pagination:{
+          deep: true,
+          handler(){
+            this.queryCategoryParam()
+          }
         }
       }
     }

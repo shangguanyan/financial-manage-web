@@ -23,6 +23,8 @@ export default new Router({
         route("/goods/category","/goods/Category","Category"),
         route("/goods/brand","/goods/Brand","Brand"),
         route("/goods/param","/goods/Param","Param"),
+        route("/goods/list","/goods/List","List"),
+        route("/goods/spuadd","/goods/Spuadd","SpuAdd"),
       ]
     }
   ]

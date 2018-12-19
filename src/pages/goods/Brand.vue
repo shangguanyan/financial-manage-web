@@ -44,16 +44,16 @@
           <v-toolbar-title>新增品牌</v-toolbar-title>
           <v-spacer/>
           <!--关闭窗口的按钮-->
-          <v-btn icon @click="dialog=false"><v-icon>close</v-icon></v-btn>
+          <v-btn icon @click="closeClick"><v-icon>close</v-icon></v-btn>
         </v-toolbar>
-        <v-form v-model="valid" ref="addBrandForm">
-          <v-text-field v-model="brand.name"  label="请输入品牌名称" required />
-          <v-text-field v-model="brand.letter" label="请输入品牌首字母" required />
+        <v-form v-model="valid" ref="brandForm">
+          <v-text-field v-model="brandForm.name"  label="请输入品牌名称" required />
+          <v-text-field v-model="brandForm.letter" label="请输入品牌首字母" required />
           <v-cascader
             url="/goods/category/list"
             multiple
             required
-            v-model="brand.categories"
+            v-model="brandForm.categories"
             label="请选择商品分类"/>
           <v-layout row>
             <v-flex xs3>
@@ -61,7 +61,7 @@
             </v-flex>
             <v-flex>
               <v-upload
-                v-model="brand.image"
+                v-model="brandForm.image"
                 url="/upload/image"
                 :multiple="false"
                 :pic-width="250"
@@ -103,7 +103,7 @@
           ],
           dialog: false,
           valid:false, // 表单校验结果标记
-          brand:{
+          brandForm:  {
             name:'', // 品牌名称
             letter:'', // 品牌首字母
             image:'',// 品牌logo
@@ -137,7 +137,7 @@
             })
         },
         reset() {
-          this.$refs.addBrandForm.reset();
+          this.$refs.brandForm.reset();
         },
         getSearch(){
           this.loadBrands()
@@ -145,26 +145,27 @@
         editBrand(brand){
           this.$ajax.get('/goods/brand/getByBid?bid='+brand.id).then(res=>{
             this.dialog = true;
-            this.brand = brand;
-            this.brand.categories = res.data;
+            this.brandForm = brand;
+            this.brandForm.categories = res.data;
           });
           this.isEdit = true;
-
+        },
+        closeClick(){
+          this.loadBrands();
+          this.dialog = false;
         },
         addBrand() {
           this.dialog = true;
-          this.brand = null;
-          this.isEdit = false
+          this.isEdit = false;
+          this.$refs.brandForm.reset();
+          this.brandForm.image = "";
         },
         saveBrand(){
-          // let addBrandForm = this.$refs.addBrandForm;
-          // console.log(addBrandForm)
-          // console.log(this.brand)
-          this.brand.isEdit = this.isEdit;
+          this.brandForm.isEdit = this.isEdit;
           this.$ajax({
             url:"/goods/brand/add",
             method:"post",
-            data:this.brand
+            data:this.brandForm
           }).then(res=>{
             let response = res;
             if(response.status === 200){
