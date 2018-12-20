@@ -9,6 +9,8 @@ import axios from 'axios'
 import 'vuetify/dist/vuetify.min.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import 'element-ui/lib/theme-chalk/index.css'
+import iView from 'iview';
+import 'iview/dist/styles/iview.css';
 import m from './components/message/myMessage'
 import qs from 'qs'
 
@@ -18,6 +20,7 @@ Vue.prototype.$message = m;
 Vue.prototype.$qs = qs;
 
 Vue.use(Vuetify,{icons:config.icons}, { theme: config.theme});
+Vue.use(iView);
 
 Vue.component("vTree",()=>import('./components/tree/Tree'));
 Vue.component("vCascader", () => import('./components/Cascader'));
